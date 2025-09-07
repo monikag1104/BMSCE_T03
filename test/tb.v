@@ -1,49 +1,51 @@
-`default_nettype none
+// Testbench for 8-bit Parallel Adder
+// Using Icarus Verilog + cocotb compatibility
+
 `timescale 1ns / 1ps
+`default_nettype none
 
-/* This testbench just instantiates the module and makes some convenient wires
-   that can be driven / tested by the cocotb test.py.
-*/
-module tb ();
+module adder_tb;
 
-  // Dump the signals to a VCD file. You can view it with gtkwave or surfer.
-  initial begin
-    $dumpfile("tb.vcd");
-    $dumpvars(0, tb);
-    #1;
-  end
+    // Testbench signals
+    reg  [7:0] x, y;
+    reg        cin;
+    wire [7:0] sum;
+    wire       cout;
 
-  // Wire up the inputs and outputs:
-  reg clk;
-  reg rst_n;
-  reg ena;
-  reg [7:0] ui_in;
-  reg [7:0] uio_in;
-  wire [7:0] uo_out;
-  wire [7:0] uio_out;
-  wire [7:0] uio_oe;
-`ifdef GL_TEST
-  wire VPWR = 1'b1;
-  wire VGND = 1'b0;
-`endif
+    // DUT instantiation
+    adder dut (
+        .x(x),
+        .y(y),
+        .cin(cin),
+        .sum(sum),
+        .cout(cout)
+    );
 
-  // Replace tt_um_example with your module name:
-  tt_um_example user_project (
+    // Dump file for GTKWave
+    initial begin
+        $dumpfile("waves.vcd");
+        $dumpvars(0, adder_tb);
+    end
 
-      // Include power ports for the Gate Level test:
-`ifdef GL_TEST
-      .VPWR(VPWR),
-      .VGND(VGND),
-`endif
+    // Stimulus
+    initial begin
+        // Test 1: 12 + 7
+        x = 8'b00001100; y = 8'b00000111; cin = 1'b0;
+        #15;
 
-      .ui_in  (ui_in),    // Dedicated inputs
-      .uo_out (uo_out),   // Dedicated outputs
-      .uio_in (uio_in),   // IOs: Input path
-      .uio_out(uio_out),  // IOs: Output path
-      .uio_oe (uio_oe),   // IOs: Enable path (active high: 0=input, 1=output)
-      .ena    (ena),      // enable - goes high when design is selected
-      .clk    (clk),      // clock
-      .rst_n  (rst_n)     // not reset
-  );
+        // Test 2: 240 + 15 + carry-in
+        x = 8'b11110000; y = 8'b00001111; cin = 1'b1;
+        #15;
+
+        // Test 3: Alternating pattern
+        x = 8'b10101010; y = 8'b01010101; cin = 1'b0;
+        #15;
+
+        // Test 4: Overflow case
+        x = 8'b11111111; y = 8'b00000001; cin = 1'b0;
+        #15;
+
+        $finish;
+    end
 
 endmodule
