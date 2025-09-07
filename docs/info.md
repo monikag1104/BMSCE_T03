@@ -30,7 +30,7 @@ This is a combinational circuit (no clock required).
    gtkwave waves.vcd
 4. The testbench (adder_tb.v) already includes several test cases, such as:
    12 + 7 without carry-in
-   240 + 15 + 1 with carry-in
+   240 + 15 + 1 with carry-in  
    Alternating bit patterns (10101010 + 01010101)
    Overflow case (255 + 1)
 
