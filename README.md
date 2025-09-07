@@ -39,3 +39,19 @@ The GitHub action will automatically build the ASIC files using [OpenLane](https
   - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
   - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
   - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
+
+## Project Description
+
+Design Name: 8-bit Parallel Adder
+
+Functionality: This project implements an 8-bit parallel adder using full-adder modules.  
+- Inputs: x[7:0], y[7:0], cin  
+- Outputs: sum[7:0], cout  
+
+How it works: Each bit is added using a full-adder with carry propagation from LSB to MSB. The design can handle overflow via the carry-out signal.
+
+Testing:A cocotb testbench (test/test_adder.py) verifies several cases, including normal addition, carry-in, alternating bit patterns, and overflow.  
+Simulation results can be viewed using GTKWave (tb.vcd + tb.gtkw).
+
+Waveform / Block Diagram:  
+See test/tb.gtkw for waveform visualization and docs/info.md for the block diagram.
