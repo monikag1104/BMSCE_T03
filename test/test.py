@@ -1,40 +1,42 @@
-# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
+# SPDX-FileCopyrightText: © 2024
 # SPDX-License-Identifier: Apache-2.0
 
 import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles
+from cocotb.triggers import Timer
 
 
 @cocotb.test()
-async def test_project(dut):
-    dut._log.info("Start")
+async def test_adder_basic(dut):
+    """Basic tests for the 8-bit Parallel Adder"""
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, units="us")
-    cocotb.start_soon(clock.start())
+    dut._log.info("Start Adder Test")
 
-    # Reset
-    dut._log.info("Reset")
-    dut.ena.value = 1
-    dut.ui_in.value = 0
-    dut.uio_in.value = 0
-    dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 10)
-    dut.rst_n.value = 1
+    # Test 1: 12 + 7 + 0 = 19
+    dut.x.value = 12
+    dut.y.value = 7
+    dut.cin.value = 0
+    await Timer(1, units="ns")
+    assert dut.sum.value == 19 and dut.cout.value == 0, f"Test1 failed: got {int(dut.sum.value)}"
 
-    dut._log.info("Test project behavior")
+    # Test 2: 240 + 15 + 1 = 256 -> sum=0, cout=1
+    dut.x.value = 240
+    dut.y.value = 15
+    dut.cin.value = 1
+    await Timer(1, units="ns")
+    assert dut.sum.value == 0 and dut.cout.value == 1, f"Test2 failed: got {int(dut.sum.value)}, {int(dut.cout.value)}"
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+    # Test 3: Alternating pattern
+    dut.x.value = 0b10101010
+    dut.y.value = 0b01010101
+    dut.cin.value = 0
+    await Timer(1, units="ns")
+    assert dut.sum.value == 255 and dut.cout.value == 0, f"Test3 failed: got {int(dut.sum.value)}"
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
+    # Test 4: Overflow case (255 + 1)
+    dut.x.value = 255
+    dut.y.value = 1
+    dut.cin.value = 0
+    await Timer(1, units="ns")
+    assert dut.sum.value == 0 and dut.cout.value == 1, f"Test4 failed: got {int(dut.sum.value)}"
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
-
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    dut._log.info("All tests passed ✅")
