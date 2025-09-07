@@ -7,7 +7,7 @@ from cocotb.triggers import Timer
 
 @cocotb.test()
 async def test_adder_basic(dut):
-    """Basic tests for the 8-bit Parallel Adder"""
+    """Basic tests for the 8-bit Parallel Adder"""  
 
     dut._log.info("Starting 8-bit Parallel Adder tests")
 
